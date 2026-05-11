@@ -74,7 +74,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   color: AppColors.textPrimary,
                 ),
                 children: const [
-                  TextSpan(text: 'Halo, Ferdiansyah '),
+                  TextSpan(text: 'Halo, Ryandi '),
                   TextSpan(text: '👋', style: TextStyle(fontSize: 24)),
                 ],
               ),
