@@ -4,8 +4,9 @@ import '../models/models.dart';
 
 class ScheduleCard extends StatelessWidget {
   final Schedule schedule;
+  final bool showSks;
 
-  const ScheduleCard({super.key, required this.schedule});
+  const ScheduleCard({super.key, required this.schedule, this.showSks = true});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +31,7 @@ class ScheduleCard extends StatelessWidget {
             width: 4,
             height: 60,
             decoration: BoxDecoration(
-              color: AppColors.primary,
+              color: schedule.borderColor ?? AppColors.primary,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -50,42 +51,66 @@ class ScheduleCard extends StatelessWidget {
                         color: Color(0xFF1E3A5F),
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        'SKS: ${schedule.sks}',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey[600],
+                    if (schedule.tag != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.red[50],
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          schedule.tag!,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red[400],
+                          ),
+                        ),
+                      )
+                    else if (showSks)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(
+                          'SKS: ${schedule.sks}',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[600],
+                          ),
                         ),
                       ),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
-                Row(
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 4,
                   children: [
-                    Icon(Icons.access_time, size: 14, color: Colors.grey[500]),
-                    const SizedBox(width: 4),
-                    Text(
-                      schedule.time,
-                      style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.access_time, size: 14, color: Colors.grey[500]),
+                        const SizedBox(width: 4),
+                        Text(
+                          schedule.time,
+                          style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Icon(Icons.location_on_outlined, size: 14, color: Colors.grey[500]),
-                    const SizedBox(width: 4),
-                    Text(
-                      schedule.location,
-                      style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(schedule.locationIcon ?? Icons.location_on_outlined, size: 14, color: Colors.grey[500]),
+                        const SizedBox(width: 4),
+                        Text(
+                          schedule.location,
+                          style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                        ),
+                      ],
                     ),
                   ],
                 ),
