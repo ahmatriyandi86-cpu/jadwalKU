@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../core/app_colors.dart';
 import 'home_tab.dart';
 import 'schedule_tab.dart';
+import 'tasks_tab.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -16,7 +17,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final List<Widget> _tabs = [
     HomeTab(),
     ScheduleTab(),
-    const Center(child: Text('Tugas Screen (Placeholder)')),
+    const TasksTab(),
     const Center(child: Text('Profil Screen (Placeholder)')),
   ];
 
@@ -57,11 +58,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
         index: _selectedIndex,
         children: _tabs,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, size: 30, color: Colors.white),
-      ),
+      floatingActionButton: _selectedIndex == 2
+          ? FloatingActionButton.extended(
+              onPressed: () {},
+              backgroundColor: AppColors.primary,
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text(
+                'Tambah Tugas',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+            )
+          : FloatingActionButton(
+              onPressed: () {},
+              backgroundColor: AppColors.primary,
+              child: const Icon(Icons.add, size: 30, color: Colors.white),
+            ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) => setState(() => _selectedIndex = index),

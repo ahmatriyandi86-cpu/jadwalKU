@@ -27,6 +27,9 @@ class Task {
   final String deadline;
   final String time;
   final String iconType; // 'project', 'report', etc.
+  final bool isCompleted;
+  final String? tag;
+  final Color? borderColor;
 
   Task({
     required this.title,
@@ -34,5 +37,8 @@ class Task {
     required this.deadline,
     required this.time,
     required this.iconType,
+    this.isCompleted = false,
+    this.tag,
+    this.borderColor,
   });
 }
