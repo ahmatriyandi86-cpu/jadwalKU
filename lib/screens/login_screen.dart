@@ -10,7 +10,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final bool _obscureText = true;
+  bool _isPasswordVisible = false;
+  bool _rememberMe = false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -171,11 +173,25 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 const SizedBox(height: 8),
                                 TextFormField(
-                                  obscureText: _obscureText,
+                                  obscureText: !_isPasswordVisible,
                                   decoration: InputDecoration(
                                     hintText: 'Masukkan kata sandi',
                                     hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
                                     prefixIcon: Icon(Icons.lock_outline, color: Colors.grey[500], size: 20),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _isPasswordVisible 
+                                            ? Icons.visibility_off_outlined 
+                                            : Icons.visibility_outlined, 
+                                        color: Colors.grey[500], 
+                                        size: 20
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _isPasswordVisible = !_isPasswordVisible;
+                                        });
+                                      },
+                                    ),
                                     contentPadding: const EdgeInsets.symmetric(vertical: 14),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(8),
@@ -190,6 +206,55 @@ class _LoginScreenState extends State<LoginScreen> {
                                       borderSide: const BorderSide(color: AppColors.primary),
                                     ),
                                   ),
+                                ),
+                                const SizedBox(height: 16),
+                                
+                                // Remember Me & Forgot Password
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        SizedBox(
+                                          height: 24,
+                                          width: 24,
+                                          child: Checkbox(
+                                            value: _rememberMe,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                _rememberMe = value ?? false;
+                                              });
+                                            },
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            activeColor: AppColors.primary,
+                                            side: BorderSide(color: Colors.grey[400]!, width: 1.5),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          'Ingat Saya',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.grey[700],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {},
+                                      child: const Text(
+                                        'Lupa Password?',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppColors.primary,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 const SizedBox(height: 24),
                                 
