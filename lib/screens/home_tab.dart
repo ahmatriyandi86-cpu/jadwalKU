@@ -1,10 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../core/app_colors.dart';
 import '../models/models.dart';
 import '../widgets/schedule_card.dart';
 import '../widgets/task_card.dart';
 
-class HomeTab extends StatelessWidget {
+class HomeTab extends StatefulWidget {
+  const HomeTab({super.key});
+
+  @override
+  State<HomeTab> createState() => _HomeTabState();
+}
+
+class _HomeTabState extends State<HomeTab> {
   final List<Schedule> schedules = [
     Schedule(
       title: 'Struktur Data',
@@ -21,6 +29,7 @@ class HomeTab extends StatelessWidget {
       deadline: 'Besok',
       time: '23:59 WIB',
       iconType: 'project',
+      isCompleted: true, // Example of completed task
     ),
     Task(
       title: 'Laporan Basis Data',
@@ -28,13 +37,42 @@ class HomeTab extends StatelessWidget {
       deadline: '3 Hari',
       time: '',
       iconType: 'report',
+      isCompleted: false,
     ),
   ];
 
-  HomeTab({super.key});
+  late DateTime _selectedDate;
+  late List<DateTime> _weekDates;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDate = DateTime.now();
+    _weekDates = _generateCurrentWeek(_selectedDate);
+  }
+
+  List<DateTime> _generateCurrentWeek(DateTime date) {
+    // Find the start of the week (Monday)
+    int daysFromMonday = date.weekday - 1;
+    DateTime monday = date.subtract(Duration(days: daysFromMonday));
+    
+    return List.generate(7, (index) => monday.add(Duration(days: index)));
+  }
+
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 11) return 'Selamat Pagi';
+    if (hour < 15) return 'Selamat Siang';
+    if (hour < 18) return 'Selamat Sore';
+    return 'Selamat Malam';
+  }
 
   @override
   Widget build(BuildContext context) {
+    final completedTasksCount = tasks.where((t) => t.isCompleted).length;
+    final totalTasksCount = tasks.length;
+    final scheduleCount = schedules.length;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -47,9 +85,9 @@ class HomeTab extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
               ),
-              children: const [
-                TextSpan(text: 'Halo, Ryandi '),
-                TextSpan(text: '👋', style: TextStyle(fontSize: 24)),
+              children: [
+                TextSpan(text: '${_getGreeting()}, Ryandi '),
+                const TextSpan(text: '👋', style: TextStyle(fontSize: 24)),
               ],
             ),
           ),
@@ -74,7 +112,7 @@ class HomeTab extends StatelessWidget {
               Expanded(
                 child: _buildStatCard(
                   'TUGAS SELESAI',
-                  '12/15',
+                  '$completedTasksCount/$totalTasksCount',
                   AppColors.darkBlueCard,
                   Colors.white,
                 ),
@@ -83,7 +121,7 @@ class HomeTab extends StatelessWidget {
               Expanded(
                 child: _buildStatCard(
                   'KULIAH HARI INI',
-                  '3 Sesi',
+                  '$scheduleCount Sesi',
                   AppColors.lightBlueCard,
                   AppColors.primary,
                 ),
@@ -124,15 +162,35 @@ class HomeTab extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'Oktober 2023',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              Text(
+                DateFormat('MMMM yyyy').format(_selectedDate),
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               Row(
                 children: [
-                  Icon(Icons.chevron_left, color: AppColors.primary, size: 20),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedDate = _selectedDate.subtract(const Duration(days: 7));
+                        _weekDates = _generateCurrentWeek(_selectedDate);
+                      });
+                    },
+                    icon: Icon(Icons.chevron_left, color: AppColors.primary, size: 20),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
                   const SizedBox(width: 16),
-                  Icon(Icons.chevron_right, color: AppColors.primary, size: 20),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _selectedDate = _selectedDate.add(const Duration(days: 7));
+                        _weekDates = _generateCurrentWeek(_selectedDate);
+                      });
+                    },
+                    icon: Icon(Icons.chevron_right, color: AppColors.primary, size: 20),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
                 ],
               ),
             ],
@@ -140,15 +198,18 @@ class HomeTab extends StatelessWidget {
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildDateItem('S', '25'),
-              _buildDateItem('S', '26'),
-              _buildDateItem('R', '1'),
-              _buildDateItem('K', '2'),
-              _buildDateItem('J', '3', isSelected: true),
-              _buildDateItem('S', '4'),
-              _buildDateItem('M', '5'),
-            ],
+            children: _weekDates.map((date) {
+              final dayName = DateFormat('E').format(date).substring(0, 1).toUpperCase();
+              final dayDate = date.day.toString();
+              final isToday = date.day == DateTime.now().day && 
+                             date.month == DateTime.now().month && 
+                             date.year == DateTime.now().year;
+              final isSelected = date.day == _selectedDate.day && 
+                                date.month == _selectedDate.month && 
+                                date.year == _selectedDate.year;
+
+              return _buildDateItem(dayName, dayDate, isSelected: isSelected || isToday);
+            }).toList(),
           ),
         ],
       ),
@@ -243,3 +304,4 @@ class HomeTab extends StatelessWidget {
     );
   }
 }
+
