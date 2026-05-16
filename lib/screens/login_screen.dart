@@ -47,23 +47,29 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           const SizedBox(height: 20),
                           Container(
-                            width: 72,
-                            height: 72,
+                            width: 100,
+                            height: 100,
                             decoration: BoxDecoration(
-                              color: AppColors.primary,
-                              borderRadius: BorderRadius.circular(16),
+                              color: Colors.white,
+                              shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.primary.withValues(alpha: 0.3),
-                                  blurRadius: 12,
+                                  color: Colors.black.withValues(alpha: 0.05),
+                                  blurRadius: 10,
                                   offset: const Offset(0, 4),
                                 ),
                               ],
                             ),
-                            child: const Icon(
-                              Icons.school,
-                              color: Colors.white,
-                              size: 40,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Image.asset(
+                                'assets/images/uim_logo.png',
+                                errorBuilder: (context, error, stackTrace) => const Icon(
+                                  Icons.school,
+                                  color: AppColors.primary,
+                                  size: 40,
+                                ),
+                              ),
                             ),
                           ),
                           const SizedBox(height: 20),

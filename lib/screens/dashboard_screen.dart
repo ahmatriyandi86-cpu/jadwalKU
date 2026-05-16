@@ -3,6 +3,7 @@ import '../core/app_colors.dart';
 import 'home_tab.dart';
 import 'schedule_tab.dart';
 import 'tasks_tab.dart';
+import 'profile_tab.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -18,7 +19,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     HomeTab(),
     ScheduleTab(),
     const TasksTab(),
-    const Center(child: Text('Profil Screen (Placeholder)')),
+    const ProfileTab(),
   ];
 
   final List<String> _titles = [
@@ -32,9 +33,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () {},
+        leadingWidth: 48,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: Image.asset(
+            'assets/images/uim_logo.png',
+            errorBuilder: (context, error, stackTrace) => const Icon(Icons.school, color: AppColors.primary),
+          ),
         ),
         title: Text(
           _titles[_selectedIndex],

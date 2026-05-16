@@ -38,15 +38,27 @@ class _SplashScreenState extends State<SplashScreen> {
             const Spacer(flex: 3),
             // Logo Container
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFE8F0FE),
-                borderRadius: BorderRadius.circular(32),
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 15,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
               ),
-              child: const Icon(
-                Icons.calendar_today_outlined,
-                size: 64,
-                color: AppColors.primary,
+              child: Image.asset(
+                'assets/images/uim_logo.png',
+                width: 120,
+                height: 120,
+                errorBuilder: (context, error, stackTrace) => const Icon(
+                  Icons.school,
+                  size: 64,
+                  color: AppColors.primary,
+                ),
               ),
             ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack).fadeIn(),
             
