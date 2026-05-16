@@ -57,7 +57,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             padding: const EdgeInsets.only(right: 16),
             child: CircleAvatar(
               radius: 18,
-              backgroundImage: const NetworkImage('https://i.pravatar.cc/150?u=ferdiansyah'),
+              backgroundImage: const AssetImage('assets/images/profile_ryandi.jpg'),
               backgroundColor: Colors.grey[200],
             ),
           ),

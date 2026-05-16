@@ -17,12 +17,12 @@ class ProfileTab extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 50,
-                  backgroundImage: const NetworkImage('https://i.pravatar.cc/150?u=ferdiansyah'),
+                  backgroundImage: const AssetImage('assets/images/profile_ryandi.jpg'),
                   backgroundColor: Colors.grey[200],
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'Ferdiansyah',
+                  'Ryandi',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
@@ -30,7 +30,7 @@ class ProfileTab extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  'NIM: 202104010001',
+                  'NIM: 20241220115',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
