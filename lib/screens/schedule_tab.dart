@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../core/app_colors.dart';
 import '../models/models.dart';
 import '../widgets/schedule_card.dart';
+import '../providers/schedule_provider.dart';
 
 class ScheduleTab extends StatefulWidget {
   const ScheduleTab({super.key});
@@ -13,111 +15,12 @@ class ScheduleTab extends StatefulWidget {
 class _ScheduleTabState extends State<ScheduleTab> {
   bool _isListView = true;
 
-  final List<Schedule> seninSchedules = [
-    Schedule(
-      title: 'algoritma analisa.',
-      time: '07.30-09.10',
-      location: 'Lab 2 TI',
-      sks: 2,
-      day: 'Senin',
-      borderColor: AppColors.primary,
-      locationIcon: Icons.business,
-    ),
-  ];
-
-  final List<Schedule> selasaSchedules = [
-    Schedule(
-      title: 'Pemrograman Mobile.',
-      time: '07.30-09.10',
-      location: 'Lab 1 TI',
-      sks: 3,
-      day: 'Selasa',
-      borderColor: AppColors.primary,
-      locationIcon: Icons.business,
-    ),
-    Schedule(
-      title: 'P. Pemrograman Mobile.',
-      time: '09.10-10.50',
-      location: 'Lab 1 TI',
-      sks: 1,
-      day: 'Selasa',
-      borderColor: AppColors.primary,
-      locationIcon: Icons.business,
-    ),
-    Schedule(
-      title: 'Kecerdasan Buatan.',
-      time: '10.00-11.40',
-      location: 'Lab 3 TI',
-      sks: 3,
-      day: 'Selasa',
-      borderColor: AppColors.warning,
-      tag: '! Kuis',
-      locationIcon: Icons.business,
-    ),
-  ];
-
-  final List<Schedule> rabuSchedules = [
-    Schedule(
-      title: 'Lanjut Data Dasar Pemrograman.',
-      time: '09.10-10.50',
-      location: 'Lab 2 TI',
-      sks: 3,
-      day: 'Rabu',
-      borderColor: AppColors.primary,
-      locationIcon: Icons.business,
-    ),
-  ];
-
-  final List<Schedule> jumatSchedules = [
-    Schedule(
-      title: 'Rekayasa Perangkat Lunak.',
-      time: '09.10-10.50',
-      location: 'Lab 3 TI',
-      sks: 3,
-      day: 'Jumat',
-      borderColor: AppColors.primary,
-      locationIcon: Icons.business,
-    ),
-    Schedule(
-      title: 'Grafika komputer',
-      time: '10.00-11.40',
-      location: 'Ruang 2 TI',
-      sks: 3,
-      day: 'Jumat',
-      borderColor: AppColors.primary,
-      locationIcon: Icons.business,
-    ),
-  ];
-
-  final List<Schedule> ahadSchedules = [
-    Schedule(
-      title: 'Riset Operasi.',
-      time: '07.30-09.10',
-      location: 'Lab 1 TI',
-      sks: 3,
-      day: 'Ahad',
-      borderColor: AppColors.primary,
-      locationIcon: Icons.business,
-    ),
-  ];
-
-  String _getCurrentDay() {
-    int weekday = DateTime.now().weekday;
-    switch (weekday) {
-      case 1: return 'Senin';
-      case 2: return 'Selasa';
-      case 3: return 'Rabu';
-      case 4: return 'Kamis';
-      case 5: return 'Jumat';
-      case 6: return 'Sabtu';
-      case 7: return 'Ahad';
-      default: return '';
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    String currentDay = _getCurrentDay();
+    final scheduleProvider = Provider.of<ScheduleProvider>(context);
+    final allSchedules = scheduleProvider.allSchedules;
+    final currentDay = scheduleProvider.getDayName(DateTime.now().weekday);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -148,16 +51,17 @@ class _ScheduleTabState extends State<ScheduleTab> {
           ),
           const SizedBox(height: 24),
           
-          _buildDaySection('Senin', seninSchedules, currentDay == 'Senin'),
-          const SizedBox(height: 32),
-          _buildDaySection('Selasa', selasaSchedules, currentDay == 'Selasa'),
-          const SizedBox(height: 32),
-          _buildDaySection('Rabu', rabuSchedules, currentDay == 'Rabu'),
-          const SizedBox(height: 32),
-          _buildDaySection('Jumat', jumatSchedules, currentDay == 'Jumat'),
-          const SizedBox(height: 32),
-          _buildDaySection('Ahad', ahadSchedules, currentDay == 'Ahad'),
-          const SizedBox(height: 80),
+          ...allSchedules.keys.map((day) {
+            final schedules = allSchedules[day]!;
+            if (schedules.isEmpty) return const SizedBox.shrink();
+            
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 32),
+              child: _buildDaySection(day, schedules, currentDay == day),
+            );
+          }),
+          
+          const SizedBox(height: 80), // Space for FAB
         ],
       ),
     );

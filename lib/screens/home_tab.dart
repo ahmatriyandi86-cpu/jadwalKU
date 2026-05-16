@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../core/app_colors.dart';
 import '../models/models.dart';
 import '../widgets/schedule_card.dart';
 import '../widgets/task_card.dart';
+import '../providers/schedule_provider.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab({super.key});
@@ -13,45 +15,6 @@ class HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<HomeTab> {
-  final Map<String, List<Schedule>> allSchedules = {
-    'Senin': [
-      Schedule(title: 'algoritma analisa.', time: '07.30-09.10', location: 'Lab 2 TI', sks: 2, borderColor: AppColors.primary),
-    ],
-    'Selasa': [
-      Schedule(title: 'Pemrograman Mobile.', time: '07.30-09.10', location: 'Lab 1 TI', sks: 3, borderColor: AppColors.primary),
-      Schedule(title: 'P. Pemrograman Mobile.', time: '09.10-10.50', location: 'Lab 1 TI', sks: 1, borderColor: AppColors.primary),
-      Schedule(title: 'Kecerdasan Buatan.', time: '10.00-11.40', location: 'Lab 3 TI', sks: 3, borderColor: AppColors.warning, tag: '! Kuis'),
-    ],
-    'Rabu': [
-      Schedule(title: 'Lanjut Data Dasar Pemrograman.', time: '09.10-10.50', location: 'Lab 2 TI', sks: 3, borderColor: AppColors.primary),
-    ],
-    'Kamis': [],
-    'Jumat': [
-      Schedule(title: 'Rekayasa Perangkat Lunak.', time: '09.10-10.50', location: 'Lab 3 TI', sks: 3, borderColor: AppColors.primary),
-      Schedule(title: 'Grafika komputer', time: '10.00-11.40', location: 'Ruang 2 TI', sks: 3, borderColor: AppColors.primary),
-    ],
-    'Sabtu': [],
-    'Ahad': [
-      Schedule(title: 'Riset Operasi.', time: '07.30-09.10', location: 'Lab 1 TI', sks: 3, borderColor: AppColors.primary),
-    ],
-  };
-
-  List<Schedule> get _todaySchedules {
-    int weekday = DateTime.now().weekday;
-    String dayName;
-    switch (weekday) {
-      case 1: dayName = 'Senin'; break;
-      case 2: dayName = 'Selasa'; break;
-      case 3: dayName = 'Rabu'; break;
-      case 4: dayName = 'Kamis'; break;
-      case 5: dayName = 'Jumat'; break;
-      case 6: dayName = 'Sabtu'; break;
-      case 7: dayName = 'Ahad'; break;
-      default: dayName = '';
-    }
-    return allSchedules[dayName] ?? [];
-  }
-
   final List<Task> tasks = [
     Task(
       title: 'AI Project',
@@ -101,7 +64,6 @@ class _HomeTabState extends State<HomeTab> {
   Widget build(BuildContext context) {
     final completedTasksCount = tasks.where((t) => t.isCompleted).length;
     final totalTasksCount = tasks.length;
-    final scheduleCount = _todaySchedules.length;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -137,26 +99,33 @@ class _HomeTabState extends State<HomeTab> {
           const SizedBox(height: 24),
           
           // Stats Row
-          Row(
-            children: [
-              Expanded(
-                child: _buildStatCard(
-                  'TUGAS SELESAI',
-                  '$completedTasksCount/$totalTasksCount',
-                  AppColors.darkBlueCard,
-                  Colors.white,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _buildStatCard(
-                  'KULIAH HARI INI',
-                  '$scheduleCount Sesi',
-                  AppColors.lightBlueCard,
-                  AppColors.primary,
-                ),
-              ),
-            ],
+          Consumer<ScheduleProvider>(
+            builder: (context, scheduleProvider, _) {
+              final todaySchedules = scheduleProvider.todaySchedules;
+              final scheduleCount = todaySchedules.length;
+              
+              return Row(
+                children: [
+                  Expanded(
+                    child: _buildStatCard(
+                      'TUGAS SELESAI',
+                      '$completedTasksCount/$totalTasksCount',
+                      AppColors.darkBlueCard,
+                      Colors.white,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildStatCard(
+                      'KULIAH HARI INI',
+                      '$scheduleCount Sesi',
+                      AppColors.lightBlueCard,
+                      AppColors.primary,
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
           
           const SizedBox(height: 32),
@@ -164,7 +133,22 @@ class _HomeTabState extends State<HomeTab> {
           // Schedule Section
           _buildSectionHeader('Jadwal Hari Ini'),
           const SizedBox(height: 12),
-          ..._todaySchedules.map((s) => ScheduleCard(schedule: s)),
+          Consumer<ScheduleProvider>(
+            builder: (context, scheduleProvider, _) {
+              final todaySchedules = scheduleProvider.todaySchedules;
+              if (todaySchedules.isEmpty) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Text('Tidak ada jadwal kuliah hari ini'),
+                  ),
+                );
+              }
+              return Column(
+                children: todaySchedules.map((s) => ScheduleCard(schedule: s)).toList(),
+              );
+            },
+          ),
           
           const SizedBox(height: 32),
           

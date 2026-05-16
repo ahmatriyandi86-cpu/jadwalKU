@@ -2,9 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'core/app_theme.dart';
 import 'screens/splash_screen.dart';
+import 'providers/schedule_provider.dart';
 
 void main() {
-  runApp(const JadwalKuApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ScheduleProvider()),
+      ],
+      child: const JadwalKuApp(),
+    ),
+  );
 }
 
 class JadwalKuApp extends StatelessWidget {
