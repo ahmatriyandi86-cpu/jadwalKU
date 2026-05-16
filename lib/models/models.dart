@@ -9,6 +9,10 @@ class Schedule {
   final Color? borderColor;
   final String? tag;
   final IconData? locationIcon;
+  final String? lecturerName;
+  final bool isOnline;
+  final String? link;
+  final String? quizDetails;
 
   Schedule({
     required this.title,
@@ -19,6 +23,10 @@ class Schedule {
     this.borderColor,
     this.tag,
     this.locationIcon,
+    this.lecturerName,
+    this.isOnline = false,
+    this.link,
+    this.quizDetails,
   });
 }
 class Task {

@@ -44,6 +44,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined, color: AppColors.textPrimary),
+            onPressed: () {},
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: CircleAvatar(
@@ -58,21 +62,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
         index: _selectedIndex,
         children: _tabs,
       ),
-      floatingActionButton: _selectedIndex == 2
+      floatingActionButton: _selectedIndex == 1
           ? FloatingActionButton.extended(
               onPressed: () {},
               backgroundColor: AppColors.primary,
               icon: const Icon(Icons.add, color: Colors.white),
               label: const Text(
-                'Tambah Tugas',
+                'Tambah Jadwal',
                 style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
               ),
             )
-          : FloatingActionButton(
-              onPressed: () {},
-              backgroundColor: AppColors.primary,
-              child: const Icon(Icons.add, size: 30, color: Colors.white),
-            ),
+          : _selectedIndex == 2
+              ? FloatingActionButton.extended(
+                  onPressed: () {},
+                  backgroundColor: AppColors.primary,
+                  icon: const Icon(Icons.add, color: Colors.white),
+                  label: const Text(
+                    'Tambah Tugas',
+                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                )
+              : FloatingActionButton(
+                  onPressed: () {},
+                  backgroundColor: AppColors.primary,
+                  child: const Icon(Icons.add, size: 30, color: Colors.white),
+                ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) => setState(() => _selectedIndex = index),

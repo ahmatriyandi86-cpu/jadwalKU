@@ -13,14 +13,44 @@ class HomeTab extends StatefulWidget {
 }
 
 class _HomeTabState extends State<HomeTab> {
-  final List<Schedule> schedules = [
-    Schedule(
-      title: 'Struktur Data',
-      time: '08:00 - 10:00',
-      location: 'Lab Komputer 3',
-      sks: 3,
-    ),
-  ];
+  final Map<String, List<Schedule>> allSchedules = {
+    'Senin': [
+      Schedule(title: 'algoritma analisa.', time: '07.30-09.10', location: 'Lab 2 TI', sks: 2, borderColor: AppColors.primary),
+    ],
+    'Selasa': [
+      Schedule(title: 'Pemrograman Mobile.', time: '07.30-09.10', location: 'Lab 1 TI', sks: 3, borderColor: AppColors.primary),
+      Schedule(title: 'P. Pemrograman Mobile.', time: '09.10-10.50', location: 'Lab 1 TI', sks: 1, borderColor: AppColors.primary),
+      Schedule(title: 'Kecerdasan Buatan.', time: '10.00-11.40', location: 'Lab 3 TI', sks: 3, borderColor: AppColors.warning, tag: '! Kuis'),
+    ],
+    'Rabu': [
+      Schedule(title: 'Lanjut Data Dasar Pemrograman.', time: '09.10-10.50', location: 'Lab 2 TI', sks: 3, borderColor: AppColors.primary),
+    ],
+    'Kamis': [],
+    'Jumat': [
+      Schedule(title: 'Rekayasa Perangkat Lunak.', time: '09.10-10.50', location: 'Lab 3 TI', sks: 3, borderColor: AppColors.primary),
+      Schedule(title: 'Grafika komputer', time: '10.00-11.40', location: 'Ruang 2 TI', sks: 3, borderColor: AppColors.primary),
+    ],
+    'Sabtu': [],
+    'Ahad': [
+      Schedule(title: 'Riset Operasi.', time: '07.30-09.10', location: 'Lab 1 TI', sks: 3, borderColor: AppColors.primary),
+    ],
+  };
+
+  List<Schedule> get _todaySchedules {
+    int weekday = DateTime.now().weekday;
+    String dayName;
+    switch (weekday) {
+      case 1: dayName = 'Senin'; break;
+      case 2: dayName = 'Selasa'; break;
+      case 3: dayName = 'Rabu'; break;
+      case 4: dayName = 'Kamis'; break;
+      case 5: dayName = 'Jumat'; break;
+      case 6: dayName = 'Sabtu'; break;
+      case 7: dayName = 'Ahad'; break;
+      default: dayName = '';
+    }
+    return allSchedules[dayName] ?? [];
+  }
 
   final List<Task> tasks = [
     Task(
@@ -71,7 +101,7 @@ class _HomeTabState extends State<HomeTab> {
   Widget build(BuildContext context) {
     final completedTasksCount = tasks.where((t) => t.isCompleted).length;
     final totalTasksCount = tasks.length;
-    final scheduleCount = schedules.length;
+    final scheduleCount = _todaySchedules.length;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -134,7 +164,7 @@ class _HomeTabState extends State<HomeTab> {
           // Schedule Section
           _buildSectionHeader('Jadwal Hari Ini'),
           const SizedBox(height: 12),
-          ...schedules.map((s) => ScheduleCard(schedule: s)),
+          ..._todaySchedules.map((s) => ScheduleCard(schedule: s)),
           
           const SizedBox(height: 32),
           
