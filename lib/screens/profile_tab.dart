@@ -22,7 +22,7 @@ class ProfileTab extends StatelessWidget {
                   children: [
                     CircleAvatar(
                       radius: 50,
-                      backgroundImage: const AssetImage('assets/images/profil.jpg'),
+                      backgroundImage: const AssetImage('assets/images/profile_ryandi.jpg'),
                       backgroundColor: Colors.grey[200],
                     ),
                     const SizedBox(height: 16),
