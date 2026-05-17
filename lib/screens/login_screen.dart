@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import '../core/app_colors.dart';
+import '../providers/auth_provider.dart';
 import 'dashboard_screen.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -10,8 +14,41 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _rememberMe = false;
+  bool _isLoading = false;
+
+  Future<void> _handleLogin() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Mohon isi email dan kata sandi')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final success = await authProvider.login(
+      _emailController.text,
+      _passwordController.text,
+    );
+
+    setState(() => _isLoading = false);
+
+    if (success && mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const DashboardScreen()),
+      );
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Email atau kata sandi salah. Pastikan Anda sudah mendaftar.')),
+      );
+    }
+  }
 
 
   @override
@@ -131,6 +168,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 const SizedBox(height: 8),
                                 TextFormField(
+                                  controller: _emailController,
                                   decoration: InputDecoration(
                                     hintText: 'contoh@mahasiswa.ac.id',
                                     hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
@@ -179,6 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 const SizedBox(height: 8),
                                 TextFormField(
+                                  controller: _passwordController,
                                   obscureText: !_isPasswordVisible,
                                   decoration: InputDecoration(
                                     hintText: 'Masukkan kata sandi',
@@ -269,12 +308,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   width: double.infinity,
                                   height: 48,
                                   child: ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(builder: (context) => const DashboardScreen()),
-                                      );
-                                    },
+                                    onPressed: _isLoading ? null : _handleLogin,
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: AppColors.primary,
                                       shape: RoundedRectangleBorder(
@@ -282,14 +316,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                       elevation: 0,
                                     ),
-                                    child: const Text(
-                                      'Masuk',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
+                                    child: _isLoading 
+                                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                                      : const Text(
+                                          'Masuk',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                   ),
                                 ),
                                 
@@ -364,7 +400,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 style: TextStyle(color: Colors.grey[600], fontSize: 13),
                               ),
                               GestureDetector(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                                  );
+                                },
                                 child: const Text(
                                   'Daftar Akun',
                                   style: TextStyle(

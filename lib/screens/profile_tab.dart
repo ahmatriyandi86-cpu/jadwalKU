@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../core/app_colors.dart';
+import '../providers/auth_provider.dart';
+import 'login_screen.dart';
 
 class ProfileTab extends StatelessWidget {
   const ProfileTab({super.key});
@@ -11,34 +14,38 @@ class ProfileTab extends StatelessWidget {
         children: [
           const SizedBox(height: 20),
           // Profile Header
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: const AssetImage('assets/images/profile_ryandi.jpg'),
-                  backgroundColor: Colors.grey[200],
+          Consumer<AuthProvider>(
+            builder: (context, auth, _) {
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundImage: const AssetImage('assets/images/profil.jpg'),
+                      backgroundColor: Colors.grey[200],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      auth.userName ?? 'Mahasiswa',
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.textPrimary,
+                      ),
+                    ),
+                    Text(
+                      auth.userEmail ?? 'NIM: 20241220115',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[600],
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Ryandi',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                Text(
-                  'NIM: 20241220115',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
           ),
           
           const SizedBox(height: 32),
@@ -122,8 +129,15 @@ class ProfileTab extends StatelessWidget {
             child: SizedBox(
               width: double.infinity,
               child: TextButton(
-                onPressed: () {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
+                onPressed: () async {
+                  final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                  await authProvider.logout();
+                  if (context.mounted) {
+                    Navigator.of(context).pushAndRemoveUntil(
+                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      (route) => false,
+                    );
+                  }
                 },
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
@@ -161,7 +175,7 @@ class ProfileTab extends StatelessWidget {
           color: AppColors.textPrimary,
         ),
       ),
-      trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+      trailing: Icon(Icons.chevron_right, color: Colors.grey),
       contentPadding: const EdgeInsets.symmetric(horizontal: 28, vertical: 4),
     );
   }
