@@ -3,6 +3,10 @@ import 'package:provider/provider.dart';
 import '../core/app_colors.dart';
 import '../providers/auth_provider.dart';
 import 'login_screen.dart';
+import 'student_data_screen.dart';
+import 'transcript_screen.dart';
+import 'ukt_payment_screen.dart';
+import 'account_settings_screen.dart';
 
 class ProfileTab extends StatelessWidget {
   const ProfileTab({super.key});
@@ -116,10 +120,30 @@ class ProfileTab extends StatelessWidget {
           const SizedBox(height: 32),
           
           // Menu Items
-          _buildMenuItem(Icons.person_outline, 'Data Mahasiswa', () {}),
-          _buildMenuItem(Icons.book_outlined, 'Transkrip Nilai', () {}),
-          _buildMenuItem(Icons.payment_outlined, 'Pembayaran UKT', () {}),
-          _buildMenuItem(Icons.settings_outlined, 'Pengaturan Akun', () {}),
+          _buildMenuItem(Icons.person_outline, 'Data Mahasiswa', () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const StudentDataScreen()),
+            );
+          }),
+          _buildMenuItem(Icons.book_outlined, 'Transkrip Nilai', () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const TranscriptScreen()),
+            );
+          }),
+          _buildMenuItem(Icons.payment_outlined, 'Pembayaran UKT', () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const UktPaymentScreen()),
+            );
+          }),
+          _buildMenuItem(Icons.settings_outlined, 'Pengaturan Akun', () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AccountSettingsScreen()),
+            );
+          }),
           
           const SizedBox(height: 20),
           
