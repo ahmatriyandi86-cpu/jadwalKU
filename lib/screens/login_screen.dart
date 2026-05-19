@@ -254,49 +254,33 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 const SizedBox(height: 16),
                                 
-                                // Remember Me & Forgot Password
+                                // Remember Me checkbox
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Row(
-                                      children: [
-                                        SizedBox(
-                                          height: 24,
-                                          width: 24,
-                                          child: Checkbox(
-                                            value: _rememberMe,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                _rememberMe = value ?? false;
-                                              });
-                                            },
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(4),
-                                            ),
-                                            activeColor: AppColors.primary,
-                                            side: BorderSide(color: Colors.grey[400]!, width: 1.5),
-                                          ),
+                                    SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: Checkbox(
+                                        value: _rememberMe,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            _rememberMe = value ?? false;
+                                          });
+                                        },
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(4),
                                         ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          'Ingat Saya',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.grey[700],
-                                          ),
-                                        ),
-                                      ],
+                                        activeColor: AppColors.primary,
+                                        side: BorderSide(color: Colors.grey[400]!, width: 1.5),
+                                      ),
                                     ),
-                                    GestureDetector(
-                                      onTap: () {},
-                                      child: const Text(
-                                        'Lupa Password?',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600,
-                                          color: AppColors.primary,
-                                        ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      'Ingat Saya',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.grey[700],
                                       ),
                                     ),
                                   ],

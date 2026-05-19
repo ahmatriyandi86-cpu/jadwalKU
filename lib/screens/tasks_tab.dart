@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../core/app_colors.dart';
-import '../models/models.dart';
+import '../providers/task_provider.dart';
 import '../widgets/task_list_item.dart';
 
 class TasksTab extends StatefulWidget {
@@ -11,96 +12,6 @@ class TasksTab extends StatefulWidget {
 }
 
 class _TasksTabState extends State<TasksTab> {
-  final List<Task> _tasks = [
-    Task(
-      title: 'AI Project - Neural Networks',
-      category: 'Kecerdasan Buatan',
-      deadline: DateTime(2026, 5, 20), // Tomorrow
-      time: '23:59 WIB',
-      iconType: 'project',
-      tag: 'Mendesak',
-      borderColor: Colors.red[700],
-      isCompleted: false,
-      hasAttachment: true,
-      subTasks: [
-        SubTask(title: 'Cari Dataset & Data Cleaning', isCompleted: true),
-        SubTask(title: 'Preprocessing Data & Model Architecture Design', isCompleted: false),
-        SubTask(title: 'Melatih Model Neural Networks', isCompleted: false),
-        SubTask(title: 'Susun Laporan & Evaluasi Model', isCompleted: false),
-      ],
-    ),
-    Task(
-      title: 'Database Schema Design',
-      category: 'Basis Data II',
-      deadline: DateTime(2026, 5, 22), // 3 Days from now
-      time: '18:00 WIB',
-      iconType: 'project',
-      tag: 'Penting',
-      borderColor: Colors.brown[700],
-      isCompleted: false,
-      hasAttachment: true,
-      subTasks: [
-        SubTask(title: 'Analisis Entitas & Hubungan', isCompleted: true),
-        SubTask(title: 'Normalisasi 1NF ke 3NF', isCompleted: false),
-        SubTask(title: 'Menggambar Entity Relationship Diagram (ERD)', isCompleted: false),
-      ],
-    ),
-    Task(
-      title: 'UI Design - High Fidelity',
-      category: 'Interaksi Manusia & Komputer',
-      deadline: DateTime(2026, 5, 25), // 6 Days from now
-      time: '13:00 WIB',
-      iconType: 'project',
-      tag: 'Biasa',
-      borderColor: AppColors.primary,
-      isCompleted: false,
-      hasAttachment: false,
-      subTasks: [
-        SubTask(title: 'Membuat Wireframe Layout', isCompleted: true),
-        SubTask(title: 'Menentukan Palette Warna & Tipografi', isCompleted: true),
-        SubTask(title: 'Membuat Komponen UI & Prototyping', isCompleted: false),
-      ],
-    ),
-    Task(
-      title: 'Research Paper Review',
-      category: 'Metodologi Penelitian',
-      deadline: DateTime(2026, 5, 15), // Past
-      time: '10:00 WIB',
-      iconType: 'report',
-      tag: 'Selesai',
-      borderColor: Colors.grey,
-      isCompleted: true,
-      hasAttachment: true,
-      subTasks: [
-        SubTask(title: 'Membaca Paper Utama', isCompleted: true),
-        SubTask(title: 'Merangkum Kontribusi Paper', isCompleted: true),
-        SubTask(title: 'Menyusun Laporan Ulasan Kritis', isCompleted: true),
-      ],
-    ),
-  ];
-
-  List<Task> get _sortedTasks {
-    final sorted = List<Task>.from(_tasks);
-    sorted.sort((a, b) {
-      if (a.isCompleted != b.isCompleted) {
-        return a.isCompleted ? 1 : -1;
-      }
-      int getWeight(String? tag) {
-        if (tag == 'Mendesak') return 3;
-        if (tag == 'Penting') return 2;
-        if (tag == 'Biasa') return 1;
-        return 0;
-      }
-      int weightA = getWeight(a.tag);
-      int weightB = getWeight(b.tag);
-      if (weightA != weightB) {
-        return weightB.compareTo(weightA);
-      }
-      return a.deadline.compareTo(b.deadline);
-    });
-    return sorted;
-  }
-
   void _showStatsBottomSheet(int completed, int total, int percentage) {
     showModalBottomSheet(
       context: context,
@@ -240,8 +151,12 @@ class _TasksTabState extends State<TasksTab> {
 
   @override
   Widget build(BuildContext context) {
-    final totalTasks = _tasks.length;
-    final completedTasks = _tasks.where((t) => t.isCompleted).length;
+    final taskProvider = context.watch<TaskProvider>();
+    final allTasks = taskProvider.tasks;
+    final sortedTasksList = taskProvider.sortedTasks;
+
+    final totalTasks = allTasks.length;
+    final completedTasks = allTasks.where((t) => t.isCompleted).length;
     final remainingTasks = totalTasks - completedTasks;
     final percentage = totalTasks > 0 ? (completedTasks / totalTasks * 100).round() : 0;
 
@@ -343,38 +258,24 @@ class _TasksTabState extends State<TasksTab> {
           ),
           const SizedBox(height: 12),
           
-          // List Tugas (Sorted automatically)
-          ..._sortedTasks.map((task) {
-            return TaskListItem(
-              task: task,
-              onChanged: (val) {
-                setState(() {
-                  int index = _tasks.indexOf(task);
-                  final isDone = val == true;
-                  final newSubTasks = task.subTasks.map((s) => s.copyWith(isCompleted: isDone)).toList();
-                  _tasks[index] = task.copyWith(
-                    isCompleted: isDone,
-                    tag: isDone ? 'Selesai' : (task.tag == 'Selesai' ? 'Biasa' : task.tag),
-                    borderColor: isDone ? Colors.grey : (task.tag == 'Mendesak' ? Colors.red[700] : (task.tag == 'Penting' ? Colors.brown[700] : AppColors.primary)),
-                    subTasks: newSubTasks,
-                  );
-                });
-              },
-              onTaskChanged: (updatedTask) {
-                setState(() {
-                  int index = _tasks.indexOf(task);
-                  final allSubTasksCompleted = updatedTask.subTasks.isNotEmpty &&
-                      updatedTask.subTasks.every((s) => s.isCompleted);
-                  
-                  _tasks[index] = updatedTask.copyWith(
-                    isCompleted: allSubTasksCompleted ? true : updatedTask.isCompleted,
-                    tag: allSubTasksCompleted ? 'Selesai' : (updatedTask.tag == 'Selesai' ? 'Biasa' : updatedTask.tag),
-                    borderColor: allSubTasksCompleted ? Colors.grey : (updatedTask.tag == 'Mendesak' ? Colors.red[700] : (updatedTask.tag == 'Penting' ? Colors.brown[700] : AppColors.primary)),
-                  );
-                });
-              },
-            );
-          }),
+          // List Tugas (Sorted automatically from central provider)
+          if (sortedTasksList.isEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 40),
+              child: Center(
+                child: Text(
+                  'Belum ada daftar tugas.',
+                  style: TextStyle(color: Colors.grey, fontSize: 14),
+                ),
+              ),
+            )
+          else
+            ...sortedTasksList.map((task) {
+              return TaskListItem(
+                key: ValueKey(task.id),
+                task: task,
+              );
+            }),
               
           const SizedBox(height: 80), // Space for FAB
         ],

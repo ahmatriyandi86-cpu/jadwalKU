@@ -4,6 +4,7 @@ import 'core/app_theme.dart';
 import 'screens/splash_screen.dart';
 import 'providers/schedule_provider.dart';
 import 'providers/auth_provider.dart';
+import 'providers/task_provider.dart';
 
 void main() {
   runApp(
@@ -11,6 +12,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ScheduleProvider()),
+        ChangeNotifierProvider(create: (_) => TaskProvider()),
       ],
       child: const JadwalKuApp(),
     ),

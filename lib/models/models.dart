@@ -48,8 +48,10 @@ class SubTask {
 }
 
 class Task {
+  final String id;
   final String title;
   final String category;
+  final String description;
   final DateTime deadline;
   final String time;
   final String iconType; // 'project', 'report', etc.
@@ -59,10 +61,15 @@ class Task {
   final List<SubTask> subTasks;
   final bool hasAttachment;
   final String? reminderSetting;
+  final String? attachmentUrl;
+  final String? attachmentFileName;
+  final DateTime? submittedAt;
 
   Task({
+    required this.id,
     required this.title,
     required this.category,
+    required this.description,
     required this.deadline,
     required this.time,
     required this.iconType,
@@ -72,11 +79,16 @@ class Task {
     this.subTasks = const [],
     this.hasAttachment = false,
     this.reminderSetting,
+    this.attachmentUrl,
+    this.attachmentFileName,
+    this.submittedAt,
   });
 
   Task copyWith({
+    String? id,
     String? title,
     String? category,
+    String? description,
     DateTime? deadline,
     String? time,
     String? iconType,
@@ -86,10 +98,15 @@ class Task {
     List<SubTask>? subTasks,
     bool? hasAttachment,
     String? reminderSetting,
+    String? attachmentUrl,
+    String? attachmentFileName,
+    DateTime? submittedAt,
   }) {
     return Task(
+      id: id ?? this.id,
       title: title ?? this.title,
       category: category ?? this.category,
+      description: description ?? this.description,
       deadline: deadline ?? this.deadline,
       time: time ?? this.time,
       iconType: iconType ?? this.iconType,
@@ -99,6 +116,9 @@ class Task {
       subTasks: subTasks ?? this.subTasks,
       hasAttachment: hasAttachment ?? this.hasAttachment,
       reminderSetting: reminderSetting ?? this.reminderSetting,
+      attachmentUrl: attachmentUrl ?? this.attachmentUrl,
+      attachmentFileName: attachmentFileName ?? this.attachmentFileName,
+      submittedAt: submittedAt ?? this.submittedAt,
     );
   }
 }

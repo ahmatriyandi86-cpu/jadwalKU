@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../core/app_colors.dart';
 import '../core/app_utils.dart';
 import '../models/models.dart';
+import '../providers/task_provider.dart';
+import '../screens/task_detail_screen.dart';
 
 class TaskListItem extends StatefulWidget {
   final Task task;
-  final ValueChanged<bool?>? onChanged;
-  final ValueChanged<Task>? onTaskChanged;
 
   const TaskListItem({
     super.key,
     required this.task,
-    this.onChanged,
-    this.onTaskChanged,
   });
 
   @override
@@ -47,6 +46,7 @@ class _TaskListItemState extends State<TaskListItem> {
   }
 
   void _showReminderDialog() {
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
     String? selected = widget.task.reminderSetting;
     showModalBottomSheet(
       context: context,
@@ -101,8 +101,7 @@ class _TaskListItemState extends State<TaskListItem> {
                       ),
                       onPressed: () {
                         Navigator.pop(context);
-                        final updatedTask = widget.task.copyWith(reminderSetting: selected);
-                        widget.onTaskChanged?.call(updatedTask);
+                        taskProvider.updateTaskReminder(widget.task.id, selected ?? 'on_time');
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Row(
@@ -174,6 +173,7 @@ class _TaskListItemState extends State<TaskListItem> {
 
   @override
   Widget build(BuildContext context) {
+    final taskProvider = Provider.of<TaskProvider>(context, listen: false);
     final completedSubTasks = widget.task.subTasks.where((s) => s.isCompleted).length;
     final totalSubTasks = widget.task.subTasks.length;
 
@@ -197,9 +197,12 @@ class _TaskListItemState extends State<TaskListItem> {
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () {
-            setState(() {
-              _isExpanded = !_isExpanded;
-            });
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TaskDetailScreen(taskId: widget.task.id),
+              ),
+            );
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -226,7 +229,9 @@ class _TaskListItemState extends State<TaskListItem> {
                       height: 24,
                       child: Checkbox(
                         value: widget.task.isCompleted,
-                        onChanged: widget.onChanged,
+                        onChanged: (val) {
+                          taskProvider.toggleTaskCompletion(widget.task.id, val ?? false);
+                        },
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                         side: BorderSide(color: Colors.grey[400]!),
                         activeColor: AppColors.primary,
@@ -268,6 +273,23 @@ class _TaskListItemState extends State<TaskListItem> {
                                       fontSize: 11,
                                       fontWeight: FontWeight.bold,
                                       color: getTagTextColor(),
+                                    ),
+                                  ),
+                                ),
+                              if (totalSubTasks > 0)
+                                InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      _isExpanded = !_isExpanded;
+                                    });
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    margin: const EdgeInsets.only(left: 4),
+                                    child: Icon(
+                                      _isExpanded ? Icons.expand_less : Icons.expand_more,
+                                      color: Colors.grey[600],
+                                      size: 20,
                                     ),
                                   ),
                                 ),
@@ -363,11 +385,7 @@ class _TaskListItemState extends State<TaskListItem> {
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: InkWell(
                             onTap: () {
-                              final newSubTasks = List<SubTask>.from(widget.task.subTasks);
-                              newSubTasks[idx] = sub.copyWith(isCompleted: !sub.isCompleted);
-                              // Auto update main task completion if all subtasks are complete? We let user choose or do it explicitly.
-                              final updatedTask = widget.task.copyWith(subTasks: newSubTasks);
-                              widget.onTaskChanged?.call(updatedTask);
+                              taskProvider.toggleSubTask(widget.task.id, idx, !sub.isCompleted);
                             },
                             borderRadius: BorderRadius.circular(8),
                             child: Padding(
@@ -380,10 +398,7 @@ class _TaskListItemState extends State<TaskListItem> {
                                     child: Checkbox(
                                       value: sub.isCompleted,
                                       onChanged: (val) {
-                                        final newSubTasks = List<SubTask>.from(widget.task.subTasks);
-                                        newSubTasks[idx] = sub.copyWith(isCompleted: val ?? false);
-                                        final updatedTask = widget.task.copyWith(subTasks: newSubTasks);
-                                        widget.onTaskChanged?.call(updatedTask);
+                                        taskProvider.toggleSubTask(widget.task.id, idx, val ?? false);
                                       },
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                                       side: BorderSide(color: Colors.grey[400]!),

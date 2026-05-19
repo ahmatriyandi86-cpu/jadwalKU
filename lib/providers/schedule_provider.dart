@@ -111,4 +111,13 @@ class ScheduleProvider extends ChangeNotifier {
       default: return '';
     }
   }
+
+  void addSchedule(Schedule schedule) {
+    final day = schedule.day ?? 'Senin';
+    if (!_allSchedules.containsKey(day)) {
+      _allSchedules[day] = [];
+    }
+    _allSchedules[day]!.add(schedule);
+    notifyListeners();
+  }
 }
