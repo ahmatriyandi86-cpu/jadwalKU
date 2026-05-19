@@ -19,20 +19,57 @@ class _HomeTabState extends State<HomeTab> {
     Task(
       title: 'AI Project',
       category: 'Kecerdasan Buatan',
-      deadline: 'Besok',
+      deadline: DateTime(2026, 5, 20),
       time: '23:59 WIB',
       iconType: 'project',
       isCompleted: true, // Example of completed task
+      tag: 'Mendesak',
+      borderColor: Colors.red[700],
+      subTasks: [
+        SubTask(title: 'Cari Dataset & Data Cleaning', isCompleted: true),
+        SubTask(title: 'Preprocessing Data & Model Architecture Design', isCompleted: true),
+        SubTask(title: 'Melatih Model Neural Networks', isCompleted: true),
+        SubTask(title: 'Susun Laporan & Evaluasi Model', isCompleted: true),
+      ],
     ),
     Task(
       title: 'Laporan Basis Data',
       category: 'Basis Data I',
-      deadline: '3 Hari',
+      deadline: DateTime(2026, 5, 22),
       time: '',
       iconType: 'report',
       isCompleted: false,
+      tag: 'Penting',
+      borderColor: Colors.brown[700],
+      subTasks: [
+        SubTask(title: 'Analisis Entitas & Hubungan', isCompleted: true),
+        SubTask(title: 'Normalisasi 1NF ke 3NF', isCompleted: false),
+        SubTask(title: 'Menggambar Entity Relationship Diagram (ERD)', isCompleted: false),
+      ],
     ),
   ];
+
+  List<Task> get _sortedTasks {
+    final sorted = List<Task>.from(tasks);
+    sorted.sort((a, b) {
+      if (a.isCompleted != b.isCompleted) {
+        return a.isCompleted ? 1 : -1;
+      }
+      int getWeight(String? tag) {
+        if (tag == 'Mendesak') return 3;
+        if (tag == 'Penting') return 2;
+        if (tag == 'Biasa') return 1;
+        return 0;
+      }
+      int weightA = getWeight(a.tag);
+      int weightB = getWeight(b.tag);
+      if (weightA != weightB) {
+        return weightB.compareTo(weightA);
+      }
+      return a.deadline.compareTo(b.deadline);
+    });
+    return sorted;
+  }
 
   late DateTime _selectedDate;
   late List<DateTime> _weekDates;
@@ -155,7 +192,7 @@ class _HomeTabState extends State<HomeTab> {
           // Tasks Section
           _buildSectionHeader('Deadline Tugas'),
           const SizedBox(height: 12),
-          ...tasks.map((t) => TaskCard(task: t)),
+          ..._sortedTasks.map((t) => TaskCard(task: t)),
           
           const SizedBox(height: 80), // Space for FAB
         ],

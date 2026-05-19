@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/app_colors.dart';
+import '../core/app_utils.dart';
 import '../models/models.dart';
 
 class TaskCard extends StatelessWidget {
@@ -12,6 +13,9 @@ class TaskCard extends StatelessWidget {
     Color iconBgColor = task.iconType == 'project' ? const Color(0xFFFFE8E0) : const Color(0xFFE8F0FE);
     Color iconColor = task.iconType == 'project' ? const Color(0xFFD35400) : AppColors.primary;
     IconData iconData = task.iconType == 'project' ? Icons.assignment : Icons.code;
+
+    final relativeDeadline = AppUtils.formatRelativeDeadline(task.deadline);
+    final isUrgentDate = relativeDeadline.contains('Besok') || relativeDeadline.contains('Hari Ini');
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
@@ -57,15 +61,15 @@ class TaskCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: task.deadline == 'Besok' ? const Color(0xFFFFE0E0) : Colors.grey[100],
+                  color: isUrgentDate ? const Color(0xFFFFE0E0) : Colors.grey[100],
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  task.deadline,
+                  relativeDeadline,
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: task.deadline == 'Besok' ? Colors.red[700] : Colors.grey[600],
+                    color: isUrgentDate ? Colors.red[700] : Colors.grey[600],
                   ),
                 ),
               ),
